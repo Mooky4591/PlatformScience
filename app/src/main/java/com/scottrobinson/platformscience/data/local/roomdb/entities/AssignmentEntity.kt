@@ -1,9 +1,9 @@
+package com.scottrobinson.platformscience.data.local.roomdb.entities
+
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.scottrobinson.platformscience.data.local.roomdb.entities.DriverEntity
-import com.scottrobinson.platformscience.data.local.roomdb.entities.ShipmentEntity
 
 @Entity(
     tableName = "assignments",

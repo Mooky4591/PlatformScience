@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.scottrobinson.platformscience.data.local.roomdb.daos.AssignmentDao
 import com.scottrobinson.platformscience.data.local.roomdb.daos.DriverDao
 import com.scottrobinson.platformscience.data.local.roomdb.daos.ShipmentDao
+import com.scottrobinson.platformscience.data.local.roomdb.entities.AssignmentEntity
 import com.scottrobinson.platformscience.data.local.roomdb.entities.DriverEntity
 import com.scottrobinson.platformscience.data.local.roomdb.entities.ShipmentEntity
 
