@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "shipments")
 data class ShipmentEntity(
-    @PrimaryKey val shipmentId: String,
+    @PrimaryKey(autoGenerate = true)
+    val shipmentId: Long = 0,
     val destination: String
 )

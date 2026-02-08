@@ -6,4 +6,7 @@ sealed class Screens {
 
     @Serializable
     data object Home
+
+    @Serializable
+    data object DriveDetails
 }

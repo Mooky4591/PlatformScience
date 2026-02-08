@@ -32,8 +32,9 @@ import androidx.room.PrimaryKey
     ]
 )
 data class AssignmentEntity(
-    @PrimaryKey val driverId: String,
-    val shipmentId: String,
+    @PrimaryKey
+    val driverId: Long,
+    val shipmentId: Long,
     val suitabilityScore: Double
 )
 

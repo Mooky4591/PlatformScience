@@ -14,4 +14,7 @@ interface AssignmentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertAll(assignments: List<AssignmentEntity>)
+
+    @Query("SELECT COUNT(*) FROM assignments")
+    suspend fun count(): Int
 }
