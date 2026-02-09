@@ -9,6 +9,7 @@ import com.scottrobinson.platformscience.home.presentation.screens.HomeScreen
 import com.scottrobinson.platformscience.home.presentation.viewmodel.HomeScreenViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.toRoute
+import com.scottrobinson.platformscience.driverassignment.presentation.screen.DriverAssignmentScreen
 import com.scottrobinson.platformscience.driverassignment.presentation.viewmodel.DriverAssignmentScreenViewModel
 import com.scottrobinson.platformscience.home.presentation.events.HomeScreenEvents
 
@@ -36,10 +37,12 @@ fun Nav() {
         composable<Screens.DriverAssignment>{
             val driverName = it.toRoute<Screens.DriverAssignment>()
             val driverViewModel = hiltViewModel<DriverAssignmentScreenViewModel>()
+            val state = driverViewModel.state
             LaunchedEffect(driverName) {
                 driverViewModel.setDriverName(driverName.driverName)
-
             }
+            DriverAssignmentScreen(state = state)
+
         }
     }
 }
