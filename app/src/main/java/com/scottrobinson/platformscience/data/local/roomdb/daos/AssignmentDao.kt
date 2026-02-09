@@ -9,8 +9,8 @@ import com.scottrobinson.platformscience.data.local.roomdb.entities.AssignmentEn
 @Dao
 interface AssignmentDao {
 
-    @Query("SELECT * FROM assignments WHERE driverId = :driverId LIMIT 1")
-    suspend fun getAssignment(driverId: String): AssignmentEntity?
+    @Query("SELECT * FROM assignments WHERE driverName = :driverName LIMIT 1")
+    suspend fun getAssignment(driverName: String): AssignmentEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertAll(assignments: List<AssignmentEntity>)

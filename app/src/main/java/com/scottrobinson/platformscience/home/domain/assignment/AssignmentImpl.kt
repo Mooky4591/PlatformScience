@@ -107,8 +107,8 @@ class AssignmentImpl @Inject constructor() : Assignment {
                 val shipment = shipments[j - 1]
                 val ss = score[i - 1][j - 1]
                 out += AssignmentEntity(
-                    driverId = driver.driverId,
-                    shipmentId = shipment.shipmentId,
+                    driverName = driver.name,
+                    shipmentDestination = shipment.destination,
                     suitabilityScore = ss
                 )
             }

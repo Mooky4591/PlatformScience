@@ -7,34 +7,33 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "assignments",
-    /* creates a DB index on driverId and shipmentId so table cannot contain two rows with the same
-    driverId or shipmentId so a driver can only be assigned to one shipment and a shipment can only
+    /* creates a DB index on driverName and shipmentDestination so table cannot contain two rows with the same
+    driverName or shipmentDestination so a driver can only be assigned to one shipment and a shipment can only
     be assigned to one driver */
     indices = [
-        Index(value = ["driverId"], unique = true),
-        Index(value = ["shipmentId"], unique = true)
+        Index(value = ["driverName"], unique = true),
+        Index(value = ["shipmentDestination"], unique = true)
     ],
-    //Every assignments.driverId must match an existing drivers.driverId
+    //Every assignments.driverName must match an existing drivers.name
     foreignKeys = [
         ForeignKey(
             entity = DriverEntity::class,
-            parentColumns = ["driverId"],
-            childColumns = ["driverId"],
+            parentColumns = ["name"],
+            childColumns = ["driverName"],
             onDelete = ForeignKey.CASCADE
         ),
-        //Every assignments.shipmentId must match an existing drivers.shipmentId
+        //Every assignments.shipmentDestination must match an existing drivers.destination
         ForeignKey(
             entity = ShipmentEntity::class,
-            parentColumns = ["shipmentId"],
-            childColumns = ["shipmentId"],
+            parentColumns = ["destination"],
+            childColumns = ["shipmentDestination"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class AssignmentEntity(
     @PrimaryKey
-    val driverId: Long,
-    val shipmentId: Long,
+    val driverName: String,
+    val shipmentDestination: String,
     val suitabilityScore: Double
 )
-

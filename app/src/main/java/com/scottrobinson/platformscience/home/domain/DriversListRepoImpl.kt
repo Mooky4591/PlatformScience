@@ -41,6 +41,6 @@ class DriversListRepoImpl @Inject constructor(
         // Persist assignments (1 shipment <-> 1 driver enforced by DB unique indexes)
         assignmentDao.upsertAll(assignments)
 
-        return seeded.drivers.map { DriverListDTO(driverId = it.driverId, name = it.name) }
+        return seeded.drivers.map { DriverListDTO(name = it.name) }
     }
 }
