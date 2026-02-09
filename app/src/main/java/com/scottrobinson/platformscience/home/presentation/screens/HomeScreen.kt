@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -38,12 +37,16 @@ fun HomeScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(12.dp) // space between rows
     ) {
+        item {
+            Text(text = "Drivers")
+        }
         items(
             items = state.drivers,
             key = { it.name }
         ) { driver ->
             DriverRow(
                 name = driver.name,
+                clickable = true,
                 onClick = { onEvent(HomeScreenEvents.OnDiverSelected(driver.name)) }
             )
         }
@@ -53,12 +56,13 @@ fun HomeScreen(
 @Composable
 fun DriverRow(
     name: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    clickable: Boolean
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(enabled = clickable, onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {

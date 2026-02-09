@@ -1,8 +1,5 @@
 package com.scottrobinson.platformscience.driverassignment.presentation.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,14 +21,14 @@ class DriverAssignmentScreenViewModel @Inject constructor(
         private set
 
     init {
+        load(state.driverName.orEmpty())
+    }
+
+    private fun load(driverName: String) {
         viewModelScope.launch {
             val assignment = driverAssignmentRepo.getDriverAssignment(driverName)
             state = state.copy(assignment = assignment)
         }
-    }
-
-    fun setDriverName(driverName: String) {
-        state = state.copy(driverName = driverName)
     }
 
 }

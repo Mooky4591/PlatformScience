@@ -1,14 +1,12 @@
 package com.scottrobinson.platformscience.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.scottrobinson.platformscience.home.presentation.screens.HomeScreen
 import com.scottrobinson.platformscience.home.presentation.viewmodel.HomeScreenViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.toRoute
 import com.scottrobinson.platformscience.driverassignment.presentation.screen.DriverAssignmentScreen
 import com.scottrobinson.platformscience.driverassignment.presentation.viewmodel.DriverAssignmentScreenViewModel
 import com.scottrobinson.platformscience.home.presentation.events.HomeScreenEvents
@@ -34,13 +32,9 @@ fun Nav() {
             )
         }
 
-        composable<Screens.DriverAssignment>{
-            val driverName = it.toRoute<Screens.DriverAssignment>()
-            val driverViewModel = hiltViewModel<DriverAssignmentScreenViewModel>()
+        composable<Screens.DriverAssignment>{backstackEntry ->
+            val driverViewModel = hiltViewModel<DriverAssignmentScreenViewModel>(backstackEntry)
             val state = driverViewModel.state
-            LaunchedEffect(driverName) {
-                driverViewModel.setDriverName(driverName.driverName)
-            }
             DriverAssignmentScreen(state = state)
 
         }

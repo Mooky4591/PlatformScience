@@ -8,15 +8,21 @@ class SuitabilityScorerImpl @Inject constructor() : SuitabilityScorer {
     override fun score(driverName: String, shipmentDestination: String): Double {
         val sLen = streetNameLen(shipmentDestination)
         val dLen = nameLen(driverName)
-
-        val base = if (sLen % 2 == 0) vowelCount(driverName) * 1.5 else consonantCount(driverName) * 1.0
+        // If the length of the shipment's destination street name is even, the base suitability score
+        // (SS) is the number of vowels in the driver’s name multiplied by 1.5.
+        val base =
+            if (sLen % 2 == 0) vowelCount(driverName) * 1.5 else consonantCount(driverName) * 1.0
+        // If the length of the shipment's destination street name shares any common factors
+        //( besides 1) with the length of the driver’s name, the SS is increased by 50% above the
+        // base SS.
         return if (gcd(sLen, dLen) > 1) base * 1.5 else base
     }
 
     private fun streetNameLen(address: String): Int {
         // Remove leading street number token if present; count letters only
         val parts = address.trim().split(Regex("\\s+"), limit = 2)
-        val street = if (parts.size == 2 && parts[0].all { it.isDigit() }) parts[1] else address.trim()
+        val street =
+            if (parts.size == 2 && parts[0].all { it.isDigit() }) parts[1] else address.trim()
         return street.count { it.isLetter() }
     }
 

@@ -19,82 +19,116 @@ class AssignmentImpl @Inject constructor() : Assignment {
         val m = shipments.size
         if (n == 0 || m == 0) return emptyList()
 
-        //rows of the matrix are drivers
         val rows = n
-        //If shipments < drivers, you create dummy columns (fake shipments with score 0)
+        //If shipments < drivers, create dummy columns (fake shipments with score 0)
         // so every driver can be “matched” to something
         val cols = max(n, m)
 
         // Precompute scores for all real pairs and creates score[i][j] matrix
+        //tracks the highest suitability score in the matrix
         var maxScore = 0.0
         val score = Array(rows) { DoubleArray(cols) }
         for (i in 0 until rows) {
             for (j in 0 until cols) {
+                //only calculate scores of real shipments
                 val s = if (j < m) scorer.score(drivers[i].name, shipments[j].destination) else 0.0
                 score[i][j] = s
                 if (s > maxScore) maxScore = s
             }
         }
 
-        // Min-cost matrix
-        val a = Array(rows + 1) { DoubleArray(cols + 1) }
-        for (i in 1..rows) {
-            for (j in 1..cols) {
-                a[i][j] = maxScore - score[i - 1][j - 1]
+        // Convert our "maximize suitability" problem into a "minimize cost" problem
+        // by subtracting each score from the maximum score.
+        // Hungarian algorithm works on minimization.
+        val costMatrix = Array(rows + 1) { DoubleArray(cols + 1) }
+
+        // costMatrix is 1-indexed to match the algorithm
+        for (driverIndex in 1..rows) {
+            for (shipmentIndex in 1..cols) {
+                costMatrix[driverIndex][shipmentIndex] =
+                    maxScore - score[driverIndex - 1][shipmentIndex - 1]
             }
         }
 
-        // Hungarian (minimization) for rectangular matrix (rows <= cols)
-        val u = DoubleArray(rows + 1)
-        val v = DoubleArray(cols + 1)
-        val p = IntArray(cols + 1)     // matching for columns: row assigned to column j
-        val way = IntArray(cols + 1)
+        // These arrays store the current state of the algorithm
 
-        for (i in 1..rows) {
-            p[0] = i
-            var j0 = 0
-            val minv = DoubleArray(cols + 1) { Double.POSITIVE_INFINITY }
-            val used = BooleanArray(cols + 1)
+        // Potential values for each driver (row)
+        val driverPotential = DoubleArray(rows + 1)
 
+        // Potential values for each shipment (column)
+        val shipmentPotential = DoubleArray(cols + 1)
+
+        // shipmentToDriver[j] = i -> means shipment j is assigned to driver i
+        val shipmentToDriver = IntArray(cols + 1)
+
+        // Used to reconstruct the augmenting path
+        val previousShipment = IntArray(cols + 1)
+
+        // Main loop: try to assign each driver
+        for (driver in 1..rows) {
+
+            // Start a new augmenting path from this driver
+            shipmentToDriver[0] = driver
+            var currentShipment = 0
+
+            val minReducedCost = DoubleArray(cols + 1) { Double.POSITIVE_INFINITY }
+            val visitedShipments = BooleanArray(cols + 1)
+
+            // Find an augmenting path
             do {
-                used[j0] = true
-                val i0 = p[j0]
-                var delta = Double.POSITIVE_INFINITY
-                var j1 = 0
-                for (j in 1..cols) {
-                    if (used[j]) continue
-                    val cur = a[i0][j] - u[i0] - v[j]
-                    if (cur < minv[j]) {
-                        minv[j] = cur
-                        way[j] = j0
+                visitedShipments[currentShipment] = true
+                val currentDriver = shipmentToDriver[currentShipment]
+
+                var bestDelta = Double.POSITIVE_INFINITY
+                var nextShipment = 0
+
+                // Explore all shipments
+                for (shipment in 1..cols) {
+                    if (visitedShipments[shipment]) continue
+
+                    // Reduced cost accounts for potentials
+                    val reducedCost =
+                        costMatrix[currentDriver][shipment] -
+                                driverPotential[currentDriver] -
+                                shipmentPotential[shipment]
+
+                    if (reducedCost < minReducedCost[shipment]) {
+                        minReducedCost[shipment] = reducedCost
+                        previousShipment[shipment] = currentShipment
                     }
-                    if (minv[j] < delta) {
-                        delta = minv[j]
-                        j1 = j
+
+                    if (minReducedCost[shipment] < bestDelta) {
+                        bestDelta = minReducedCost[shipment]
+                        nextShipment = shipment
                     }
                 }
-                for (j in 0..cols) {
-                    if (used[j]) {
-                        u[p[j]] += delta
-                        v[j] -= delta
+
+                // Update potentials so at least one reduced cost becomes zero
+                for (shipment in 0..cols) {
+                    if (visitedShipments[shipment]) {
+                        driverPotential[shipmentToDriver[shipment]] += bestDelta
+                        shipmentPotential[shipment] -= bestDelta
                     } else {
-                        minv[j] -= delta
+                        minReducedCost[shipment] -= bestDelta
                     }
                 }
-                j0 = j1
-            } while (p[j0] != 0)
 
+                currentShipment = nextShipment
+
+            } while (shipmentToDriver[currentShipment] != 0)
+
+            // Reconstruct the assignment path
             do {
-                val j1 = way[j0]
-                p[j0] = p[j1]
-                j0 = j1
-            } while (j0 != 0)
+                val prev = previousShipment[currentShipment]
+                shipmentToDriver[currentShipment] = shipmentToDriver[prev]
+                currentShipment = prev
+            } while (currentShipment != 0)
         }
 
         // p[j] = matched row for column j. Build row->col mapping.
         val rowToCol = IntArray(rows + 1)
         for (j in 1..cols) {
-            val i = p[j]
+            val i = shipmentToDriver[j]
             if (i in 1..rows) rowToCol[i] = j
         }
 
