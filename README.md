@@ -2,119 +2,210 @@
 
 ## Overview
 
-This is an Android application for Platform Science's driver assignment challenge. The app demonstrates modern Android development best practices, including Jetpack Compose for UI, Hilt for dependency injection, Room for local data storage, and robust unit and UI testing. The core feature is to assign drivers to shipments based on a suitability score algorithm.
+This project is an Android application built for Platform Science’s driver assignment challenge. The app assigns drivers to shipments using a suitability score algorithm, with an emphasis on modern Android architecture, testability, and separation of concerns.
 
-## Features
+Highlights:
 
-- **Driver List:** View a list of drivers loaded from a local data source.
-- **Shipment List:** View a list of shipments (destinations) loaded from a local data source.
-- **Assignment Algorithm:** Assigns drivers to shipments using a suitability score based on the rules provided in the challenge.
-- **Suitability Score:**
-  - If the street name length is even, the score is the number of vowels in the driver’s name multiplied by 1.5.
-  - If the street name length is odd, the score is the number of consonants in the driver’s name multiplied by 1.0.
-  - If the length of the shipment's destination street name shares any common factors (besides 1) with the length of the driver’s name, the score is increased by 50% above the base score.
-- **Modern Android Architecture:**
-  - MVVM pattern
-  - Jetpack Compose UI
-  - Hilt for dependency injection
-  - Room for local database
-  - Navigation component for screen transitions
-- **Testing:**
-  - Unit tests for core logic (including the suitability scorer)
-  - Instrumented UI tests for Compose screens and navigation
+* Clear domain modeling
+* Testable business logic
+* MVVM with unidirectional state
+* Jetpack Compose UI
+
+---
+
+## Problem Summary
+
+Given:
+
+* A list of drivers
+* A list of shipment destinations
+
+The app computes a suitability score for each driver–shipment pairing and produces a one-to-one assignment between drivers and shipments based on those scores.
+
+---
+
+## Suitability Score Rules
+
+For a given driver and shipment destination:
+
+1. **Even street name length**
+
+   * Base score = (number of vowels in the driver’s name) × 1.5
+
+2. **Odd street name length**
+
+   * Base score = (number of consonants in the driver’s name) × 1.0
+
+3. **Common factors**
+
+   * If the length of the driver’s name and the length of the destination street name share any common factors greater than 1, the base score is increased by 50%
+
+All scoring logic is isolated in the domain layer and unit tested.
+
+---
+
+## Assignment Strategy
+
+* Drivers and shipments are assigned in a one-to-one mapping
+* Suitability scores are calculated per pairing
+* Assignment logic is encapsulated in the domain layer
+* The resulting assignments are persisted locally and displayed via the UI
+
+The assignment logic is decoupled from UI and data sources to allow independent testing and future extension.
+
+---
+
+## Architecture
+
+The app follows a clean MVVM architecture with explicit layering:
+
+### Presentation
+
+* Jetpack Compose UI
+* ViewModels expose immutable UI state
+
+### Domain
+
+* Assignment logic
+* Suitability scoring
+* Parsing and transformation rules
+
+### Data
+
+* Room database
+* DAOs for drivers, shipments, and assignments
+* Seeded data source for initial driver and shipment data
+
+Dependency injection is handled via Hilt.
+
+---
+
+## Key Technologies
+
+* Kotlin
+* Jetpack Compose
+* Hilt
+* Room
+* Navigation Component
+* JUnit
+* Compose UI Testing
+
+---
 
 ## Project Structure
 
+```text
+app/
+  src/
+    main/
+      java/com/scottrobinson/platformscience/
+        data/
+          local/
+            roomdb/
+              database/
+              daos/
+        driverlist/
+          domain/
+            assignment/
+            parser/
+            seeder/
+            suitability/
+          presentation/
+            viewmodel/
+        driverassignment/
+          di/
+          domain/
+          presentation/
+            viewmodel/
+        navigation/
+        main/
+    test/
+      java/com/scottrobinson/platformscience/
+    androidTest/
+      java/com/scottrobinson/platformscience/
 ```
-PlatformScience/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/scottrobinson/platformscience/
-│   │   │   │   ├── driverlist/...
-│   │   │   │   ├── driverassignment/...
-│   │   │   │   ├── data/local/roomdb/...
-│   │   │   │   ├── navigation/...
-│   │   │   │   └── main/...
-│   │   ├── test/
-│   │   │   └── java/com/scottrobinson/platformscience/...
-│   │   └── androidTest/
-│   │       └── java/com/scottrobinson/platformscience/...
-├── build.gradle.kts
-├── settings.gradle.kts
-└── README.md
-```
 
-## Getting Started
+Generated Hilt and Room code is excluded for clarity.
 
-### Prerequisites
-- Android Studio (Giraffe or newer recommended)
-- JDK 11+
-- Android SDK 24+
+---
 
-### Build & Run
-1. Clone the repository:
-   ```
-   git clone <repo-url>
-   ```
-2. Open the project in Android Studio.
-3. Let Gradle sync and download dependencies.
-4. Run the app on an emulator or device.
+## Key Classes
 
-### Running Tests
-- **Unit tests:**
-  ```
-  ./gradlew test
-  ```
-- **Instrumented (UI) tests:**
-  ```
-  ./gradlew connectedAndroidTest
-  ```
-- Test reports are generated in `app/build/reports/tests/`.
+* `driverlist.domain.suitability.SuitabilityScorerImpl`
+  Implements the suitability score calculation rules.
 
-## Key Classes & Packages
+* `driverlist.domain.assignment.AssignmentImpl`
+  Handles driver–shipment assignment logic.
 
-- `driverlist.domain.suitability.SuitabilityScorerImpl` — Implements the suitability score algorithm.
-- `driverlist.presentation.screens.DriverListScreen` — Compose UI for displaying drivers.
-- `driverassignment.presentation.screen.DriverAssignmentScreen` — Compose UI for assigning drivers to shipments.
-- `data.local.roomdb` — Room database setup, DAOs, and entities.
-- `navigation` — Navigation graph and screen definitions.
-- `main` — Application and theme setup.
+* `driverlist.domain.seeder.RoomShipmentDriverSeederImpl`
+  Seeds initial driver and shipment data into the database.
 
-## Suitability Score Algorithm
+* `driverlist.presentation.viewmodel.HomeScreenViewModel`
+  Drives the driver list and assignment flow.
 
-1. **Even street name length:**
-   - Score = (number of vowels in driver name) × 1.5
-2. **Odd street name length:**
-   - Score = (number of consonants in driver name) × 1.0
-3. **Common factors:**
-   - If the length of the shipment's destination street name and the length of the driver’s name share any common factors (other than 1), increase the score by 50%.
+* `driverassignment.presentation.viewmodel.DriverAssignmentScreenViewModel`
+  Exposes assignment results to the UI.
+
+---
 
 ## Testing
 
-- **Unit tests:** Located in `app/src/test/java/` (e.g., `SuitabilityScorerImplTest`).
-- **UI/Instrumented tests:** Located in `app/src/androidTest/java/` (e.g., `DriverListScreenTest`, `NavigationUiTest`).
-- Run all tests with Gradle or from Android Studio.
+### Unit Tests
 
-## Code Quality
+* Validate suitability score calculation
+* Verify vowel and consonant counting
+* Confirm common factor detection
+* Cover boundary cases for name and street lengths
 
-- Follows MVVM and clean architecture principles.
-- Uses dependency injection (Hilt) for testability and modularity.
-- All business logic is unit tested.
-- UI is tested with Compose UI test framework.
+### UI Tests
 
-## Contributing
+* Compose screen rendering
+* Navigation flows
+* Assignment result presentation
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes
-4. Push to your branch (`git push origin feature/your-feature`)
-5. Open a pull request
+Run tests:
+
+```bash
+./gradlew test
+```
+
+```bash
+./gradlew connectedAndroidTest
+```
+
+Test reports:
+
+```text
+app/build/reports/tests/
+```
+
+---
+
+## Getting Started
+
+### Requirements
+
+* Android Studio (Giraffe or newer)
+* JDK 11+
+* Android SDK 24+
+
+### Running the App
+
+1. Clone the repository
+2. Open the project in Android Studio
+3. Allow Gradle to sync
+4. Run on an emulator or physical device
+
+---
+
+## Notes
+
+* Business logic is testable and UI-agnostic
+* No network dependencies are required
+* The project is intentionally scoped for clarity and correctness
+
+---
 
 ## License
 
-This project is for demonstration and interview purposes only. See [LICENSE](LICENSE) if present.
-
-## Contact
-
-For questions or feedback, contact Scott Robinson or open an issue in the repository.
+This project is provided strictly for demonstration and interview evaluation purposes.
