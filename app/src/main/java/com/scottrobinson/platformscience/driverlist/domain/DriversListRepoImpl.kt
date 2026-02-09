@@ -9,11 +9,6 @@ import com.scottrobinson.platformscience.driverlist.domain.suitability.Suitabili
 import com.scottrobinson.platformscience.driverlist.domain.dtos.DriverListDTO
 import javax.inject.Inject
 
-/**
- * Repo responsibilities:
- * - orchestrate: load -> parse -> persist -> assign -> return drivers
- * - no parsing rules, no scoring rules, no assignment algorithm inside this class
- */
 class DriversListRepoImpl @Inject constructor(
     private val assignmentDao: AssignmentDao,
     private val dataSource: ShipmentDriverDataSource,

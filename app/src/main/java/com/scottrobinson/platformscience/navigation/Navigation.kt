@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.scottrobinson.platformscience.driverlist.presentation.screens.HomeScreen
+import com.scottrobinson.platformscience.driverlist.presentation.screens.DriverListScreen
 import com.scottrobinson.platformscience.driverlist.presentation.viewmodel.HomeScreenViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.scottrobinson.platformscience.driverassignment.presentation.screen.DriverAssignmentScreen
@@ -21,7 +21,7 @@ fun Nav() {
         composable<Screens.Home>{
             val homeViewModel = hiltViewModel<HomeScreenViewModel>()
             val state = homeViewModel.state
-            HomeScreen(
+            DriverListScreen(
                 state = state,
                 onEvent = { event ->
                     when (event) {

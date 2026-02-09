@@ -21,7 +21,7 @@ import com.scottrobinson.platformscience.driverlist.presentation.events.DriverLi
 import com.scottrobinson.platformscience.driverlist.presentation.viewmodel.DriverListState
 
 @Composable
-fun HomeScreen(
+fun DriverListScreen(
     state: DriverListState,
     onEvent: (DriverListScreenEvents) -> Unit
 ) {
