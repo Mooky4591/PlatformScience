@@ -4,12 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.scottrobinson.platformscience.home.presentation.screens.HomeScreen
-import com.scottrobinson.platformscience.home.presentation.viewmodel.HomeScreenViewModel
+import com.scottrobinson.platformscience.driverlist.presentation.screens.HomeScreen
+import com.scottrobinson.platformscience.driverlist.presentation.viewmodel.HomeScreenViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.scottrobinson.platformscience.driverassignment.presentation.screen.DriverAssignmentScreen
 import com.scottrobinson.platformscience.driverassignment.presentation.viewmodel.DriverAssignmentScreenViewModel
-import com.scottrobinson.platformscience.home.presentation.events.HomeScreenEvents
+import com.scottrobinson.platformscience.driverlist.presentation.events.DriverListScreenEvents
 
 
 @Composable
@@ -25,7 +25,7 @@ fun Nav() {
                 state = state,
                 onEvent = { event ->
                     when (event) {
-                        is HomeScreenEvents.OnDiverSelected ->
+                        is DriverListScreenEvents.OnDiverSelected ->
                             navController.navigate(Screens.DriverAssignment(event.name))
                     }
                 }
