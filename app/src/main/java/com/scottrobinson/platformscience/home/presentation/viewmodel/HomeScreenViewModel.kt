@@ -22,30 +22,25 @@ class HomeScreenViewModel @Inject constructor(
     var state by mutableStateOf(HomeState())
         private set
 
-    private val eventChannel = MutableSharedFlow<HomeScreenEvents>()
-    val event = eventChannel.asSharedFlow()
+    private val _events = MutableSharedFlow<HomeScreenEvents>(extraBufferCapacity = 1)
+    val events = _events.asSharedFlow()
+
+    init {
+        viewModelScope.launch {
+            runCatching { driversListRepo.getDriverList() }
+                .onSuccess { drivers -> state = state.copy(drivers = drivers) }
+                .onFailure { /* handle */ }
+        }
+    }
 
     fun onEvent(event: HomeScreenEvents) {
         when (event) {
             is HomeScreenEvents.OnDiverSelected -> {
-                viewModelScope.launch {
-                    eventChannel.emit(HomeScreenEvents.OnDiverSelected(event.driverId))
-                }
-            }
-        }
-        }
-
-    init {
-        viewModelScope.launch {
-            try {
-                val divers = driversListRepo.getDriverList()
-                state = state.copy(drivers = divers)
-            } catch (e: Exception) {
-                // Handle error
+                // one-shot event for navigation layer
+                _events.tryEmit(event)
             }
         }
     }
-
 }
 
 data class HomeState(

@@ -19,14 +19,14 @@ fun Nav() {
         composable<Screens.Home>{
             val homeViewModel = hiltViewModel<HomeScreenViewModel>()
             val state = homeViewModel.state
-            ObserveAsEvents(homeViewModel.event) { event ->
+            ObserveAsEvents(homeViewModel.events) { event ->
                 when (event) {
                     is HomeScreenEvents.OnDiverSelected ->
                         navController.navigate(Screens.DriveDetails)
                 }
             }
             HomeScreen(
-                state
+                state = state
             )
         }
 

@@ -7,8 +7,7 @@ import com.scottrobinson.platformscience.data.local.roomdb.entities.ShipmentEnti
 import com.scottrobinson.platformscience.home.domain.seeder.`object`.SeedResult
 import javax.inject.Inject
 
-
-class RoomShipmentDriverSeeder @Inject constructor(
+class RoomShipmentDriverSeederImpl @Inject constructor(
     private val driverDao: DriverDao,
     private val shipmentDao: ShipmentDao,
 ) : ShipmentDriverSeeder {
@@ -20,9 +19,9 @@ class RoomShipmentDriverSeeder @Inject constructor(
         driverDao.upsertAll(driverEntities)
         shipmentDao.upsertAll(shipmentEntities)
 
-        // Fetch back entities with generated IDs
-        val seededDrivers = driverDao.getAllDrivers()
-        val seededShipments = shipmentDao.getAllShipments()
+        // Fetch back entities with generated IDs (autogen PKs)
+        val seededDrivers: List<DriverEntity> = driverDao.getAllDriversList()
+        val seededShipments: List<ShipmentEntity> = shipmentDao.getAllShipmentsList()
 
         return SeedResult(drivers = seededDrivers, shipments = seededShipments)
     }
