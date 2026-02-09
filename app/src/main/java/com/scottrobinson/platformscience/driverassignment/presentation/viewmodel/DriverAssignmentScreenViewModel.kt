@@ -30,7 +30,6 @@ class DriverAssignmentScreenViewModel @Inject constructor(
             state = state.copy(assignment = assignment)
         }
     }
-
 }
 
 data class DriverAssignmentState(
