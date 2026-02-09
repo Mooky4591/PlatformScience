@@ -3,6 +3,7 @@ package com.scottrobinson.platformscience.driverassignment.presentation.viewmode
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scottrobinson.platformscience.driverassignment.domain.DriverAssignmentRepo
@@ -13,19 +14,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DriverAssignmentScreenViewModel @Inject constructor(
-    private val driverAssignmentRepo: DriverAssignmentRepo
+    private val driverAssignmentRepo: DriverAssignmentRepo,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    var state by mutableStateOf(DriverAssignmentState())
+    private val driverName: String = savedStateHandle["driverName"] ?: ""
+
+    var state = DriverAssignmentState(driverName = driverName)
         private set
 
     init {
         viewModelScope.launch {
-            state = state.copy(
-                assignment = driverAssignmentRepo.getDriverAssignment(
-                    state.driverName ?: ""
-                )
-            )
+            val assignment = driverAssignmentRepo.getDriverAssignment(driverName)
+            state = state.copy(assignment = assignment)
         }
     }
 
