@@ -1,4 +1,4 @@
-package com.scottrobinson.platformscience.driverdetails.di
+package com.scottrobinson.platformscience.driverassignment.di
 
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -6,5 +6,5 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DriverDetailsModule {
+object DriverAssignmentModule {
 }

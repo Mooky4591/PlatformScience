@@ -8,5 +8,7 @@ sealed class Screens {
     data object Home
 
     @Serializable
-    data object DriveDetails
+    data class DriverAssignment(
+        val driverName: String
+    )
 }

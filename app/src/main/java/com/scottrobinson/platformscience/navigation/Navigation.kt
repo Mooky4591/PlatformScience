@@ -1,12 +1,15 @@
 package com.scottrobinson.platformscience.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.scottrobinson.platformscience.home.presentation.screens.HomeScreen
 import com.scottrobinson.platformscience.home.presentation.viewmodel.HomeScreenViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.toRoute
+import com.scottrobinson.platformscience.driverassignment.presentation.viewmodel.DriverAssignmentScreenViewModel
 import com.scottrobinson.platformscience.home.presentation.events.HomeScreenEvents
 
 
@@ -19,19 +22,24 @@ fun Nav() {
         composable<Screens.Home>{
             val homeViewModel = hiltViewModel<HomeScreenViewModel>()
             val state = homeViewModel.state
-            ObserveAsEvents(homeViewModel.events) { event ->
-                when (event) {
-                    is HomeScreenEvents.OnDiverSelected ->
-                        navController.navigate(Screens.DriveDetails)
-                }
-            }
             HomeScreen(
-                state = state
+                state = state,
+                onEvent = { event ->
+                    when (event) {
+                        is HomeScreenEvents.OnDiverSelected ->
+                            navController.navigate(Screens.DriverAssignment(event.name))
+                    }
+                }
             )
         }
 
-        composable<Screens.DriveDetails>{
+        composable<Screens.DriverAssignment>{
+            val driverName = it.toRoute<Screens.DriverAssignment>()
+            val driverViewModel = hiltViewModel<DriverAssignmentScreenViewModel>()
+            LaunchedEffect(driverName) {
+                driverViewModel.setDriverName(driverName.driverName)
 
+            }
         }
     }
 }

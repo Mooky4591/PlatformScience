@@ -1,4 +1,4 @@
-package com.scottrobinson.platformscience.driverdetails.presentation.screen
+package com.scottrobinson.platformscience.driverassignment.presentation.screen
 
 import androidx.compose.runtime.Composable
 

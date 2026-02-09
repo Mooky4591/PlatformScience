@@ -1,17 +1,72 @@
 package com.scottrobinson.platformscience.home.presentation.screens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.scottrobinson.platformscience.home.presentation.events.HomeScreenEvents
 import com.scottrobinson.platformscience.home.presentation.viewmodel.HomeState
 
 @Composable
-fun HomeScreen(state: HomeState) {
+fun HomeScreen(
+    state: HomeState,
+    onEvent: (HomeScreenEvents) -> Unit
+) {
 
-    LazyColumn {
-        items(state.drivers.size) { index ->
-            val driver = state.drivers[index]
-            Text(driver.name)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            bottom = 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp) // space between rows
+    ) {
+        items(
+            items = state.drivers,
+            key = { it.name }
+        ) { driver ->
+            DriverRow(
+                name = driver.name,
+                onClick = { onEvent(HomeScreenEvents.OnDiverSelected(driver.name)) }
+            )
         }
     }
 }
+
+@Composable
+fun DriverRow(
+    name: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Text(
+            text = name,
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
+}
+
